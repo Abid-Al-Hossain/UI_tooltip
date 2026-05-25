@@ -1,0 +1,218 @@
+@import "tailwindcss";
+
+/* Default = Navy */
+:root {
+  --bg: #070b16;
+  --surface: #0c142b;
+  --card: #0f1a36;
+
+  --text: #eaf0ff;
+  --muted: #a9b7e6;
+
+  --border: rgba(255, 255, 255, 0.12);
+
+  --primary: #4f7cff;
+  --primary-hover: #3f6fff;
+
+  --ring: rgba(79, 124, 255, 0.35);
+}
+
+:root[data-theme="forest"] {
+  --bg: #06110b;
+  --surface: #0a1a12;
+  --card: #0d2217;
+  --text: #e9fff2;
+  --muted: #a6d6b8;
+  --border: rgba(233, 255, 242, 0.14);
+  --primary: #22c55e;
+  --primary-hover: #16a34a;
+  --ring: rgba(34, 197, 94, 0.35);
+}
+
+:root[data-theme="lavender"] {
+  --bg: #0b0816;
+  --surface: #140f28;
+  --card: #1a1533;
+  --text: #f2efff;
+  --muted: #c9c0ff;
+  --border: rgba(242, 239, 255, 0.14);
+  --primary: #a78bfa;
+  --primary-hover: #8b5cf6;
+  --ring: rgba(167, 139, 250, 0.35);
+}
+
+:root[data-theme="sunset"] {
+  --bg: #12060a;
+  --surface: #220c12;
+  --card: #2a1018;
+  --text: #fff0f4;
+  --muted: #ffb7c8;
+  --border: rgba(255, 240, 244, 0.14);
+  --primary: #fb7185;
+  --primary-hover: #f43f5e;
+  --ring: rgba(251, 113, 133, 0.35);
+}
+
+:root[data-theme="ocean"] {
+  --bg: #04121a;
+  --surface: #061d28;
+  --card: #0b2633;
+  --text: #e6f6ff;
+  --muted: #9cc7d9;
+  --border: rgba(230, 246, 255, 0.14);
+  --primary: #06b6d4;
+  --primary-hover: #0891b2;
+  --ring: rgba(6, 182, 212, 0.35);
+}
+
+:root[data-theme="citrus"] {
+  --bg: #0e1106;
+  --surface: #151b09;
+  --card: #1d2410;
+  --text: #f4ffe8;
+  --muted: #b8d690;
+  --border: rgba(244, 255, 232, 0.14);
+  --primary: #a3e635;
+  --primary-hover: #84cc16;
+  --ring: rgba(163, 230, 53, 0.35);
+}
+
+:root[data-theme="ink"] {
+  --bg: #050505;
+  --surface: #0d0d0d;
+  --card: #141414;
+  --text: #f5f5f5;
+  --muted: #b3b3b3;
+  --border: rgba(245, 245, 245, 0.14);
+  --primary: #4b5563;
+  --primary-hover: #374151;
+  --ring: rgba(75, 85, 99, 0.45);
+}
+
+:root[data-theme="sand"] {
+  --bg: #120f0b;
+  --surface: #1b1711;
+  --card: #231e16;
+  --text: #fff6e8;
+  --muted: #d7c2a1;
+  --border: rgba(255, 246, 232, 0.14);
+  --primary: #f59e0b;
+  --primary-hover: #d97706;
+  --ring: rgba(245, 158, 11, 0.35);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body,
+header,
+footer,
+main,
+section,
+aside,
+button,
+a,
+div {
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    color 200ms ease,
+    box-shadow 200ms ease,
+    transform 200ms ease;
+}
+
+.uf-clickable,
+.uf-clickable * {
+  cursor: pointer;
+}
+
+.uf-clickable input[type="text"],
+.uf-clickable input[type="search"],
+.uf-clickable input[type="email"],
+.uf-clickable input[type="number"],
+.uf-clickable input[type="password"],
+.uf-clickable textarea {
+  cursor: text !important;
+}
+
+input.uf-clickable[type="text"],
+input.uf-clickable[type="search"],
+input.uf-clickable[type="email"],
+input.uf-clickable[type="number"],
+input.uf-clickable[type="password"],
+textarea.uf-clickable {
+  cursor: text !important;
+}
+
+input.uf-clickable:not([type]) {
+  cursor: text !important;
+}
+
+button,
+select,
+input[type="color"],
+input[type="checkbox"],
+input[type="radio"],
+input[type="range"],
+label[for] {
+  cursor: pointer;
+}
+
+input[type="text"],
+input[type="search"],
+input[type="email"],
+input[type="number"],
+input[type="password"],
+textarea {
+  cursor: text;
+}
+
+input:not([type]) {
+  cursor: text;
+}
+
+input[type="color"] {
+  cursor: pointer !important;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeInUp 280ms ease-out both;
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
