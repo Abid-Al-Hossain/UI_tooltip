@@ -3,11 +3,14 @@
 import React from "react";
 
 export function SegmentedControl(props: {
+  label?: string;
   value: string;
-  onChange: (v: string) => void;
-  items: { value: string; label: string }[];
+  onChange: (v: any) => void;
+  items?: { value: string; label: string }[];
+  options?: { value: string; label: string }[];
 }) {
-  return (
+  const items = props.items ?? props.options ?? [];
+  const control = (
     <div
       className="inline-flex w-full rounded-xl border p-1"
       style={{
@@ -15,7 +18,7 @@ export function SegmentedControl(props: {
         background: "color-mix(in oklab, var(--surface) 65%, transparent)",
       }}
     >
-      {props.items.map((it) => (
+      {items.map((it) => (
         <button
           key={it.value}
           type="button"
@@ -32,6 +35,17 @@ export function SegmentedControl(props: {
           {it.label}
         </button>
       ))}
+    </div>
+  );
+
+  if (!props.label) return control;
+
+  return (
+    <div className="grid gap-2">
+      <div className="text-sm font-medium" style={{ color: "var(--text)" }}>
+        {props.label}
+      </div>
+      {control}
     </div>
   );
 }

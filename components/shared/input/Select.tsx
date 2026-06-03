@@ -9,9 +9,10 @@ export interface SelectOption {
 }
 
 export interface SelectProps {
+  label?: string;
   value: string;
-  onChange: (v: string) => void;
-  options: SelectOption[]; // Pre-defined options
+  onChange: (v: any) => void;
+  options: SelectOption[] | string[]; // Pre-defined options
   children?: React.ReactNode; // Or raw <option> children
   disabled?: boolean;
   className?: string;
@@ -21,6 +22,7 @@ export interface SelectProps {
 
 export default function Select(props: SelectProps) {
   const {
+    label,
     value,
     onChange,
     options,
@@ -31,7 +33,11 @@ export default function Select(props: SelectProps) {
     startContent,
   } = props;
 
-  return (
+  const normalizedOptions = options.map((option) =>
+    typeof option === "string" ? { value: option, label: option } : option,
+  );
+
+  const select = (
     <div className={`relative w-full ${className || ""}`}>
       <div
         className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10"
@@ -57,8 +63,8 @@ export default function Select(props: SelectProps) {
             {placeholder}
           </option>
         )}
-        {options && options.length > 0
-          ? options.map((opt) => (
+        {normalizedOptions && normalizedOptions.length > 0
+          ? normalizedOptions.map((opt) => (
               <option key={opt.value} value={opt.value}>
                 {opt.label}
               </option>
@@ -74,5 +80,14 @@ export default function Select(props: SelectProps) {
         <ChevronDownIcon className="w-4 h-4" strokeWidth={2} />
       </div>
     </div>
+  );
+
+  if (!label) return select;
+
+  return (
+    <label className="grid gap-2 text-sm font-medium" style={{ color: "var(--text)" }}>
+      <span>{label}</span>
+      {select}
+    </label>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   PreviewPanel,
   type PreviewCanvasMode,
@@ -13,7 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export type DownloadFormat = "react";
 
-export default function PreviewDownloadPanel(props: {
+type IframePreviewDownloadPanelProps = {
   mounted: boolean;
 
   iframeSrcDoc: string;
@@ -27,17 +27,104 @@ export default function PreviewDownloadPanel(props: {
   setDownloadName: (v: string) => void;
 
   handleDownload: () => void;
-  // Optional override for React-based previews (Three.js/Framer)
   previewNode?: React.ReactNode;
-
-  // New prop for code view
   code?: string;
 
   previewBgMode?: PreviewCanvasMode;
   setPreviewBgMode?: (v: PreviewCanvasMode) => void;
   previewBgInput?: string;
   setPreviewBgInput?: (v: string) => void;
-}) {
+};
+
+type DirectPreviewDownloadPanelProps = {
+  preview: React.ReactNode;
+  code: string;
+  downloadName: string;
+  previewBgMode: PreviewCanvasMode;
+  previewBgInput: string;
+  onPreviewBgMode: (value: PreviewCanvasMode) => void;
+  onPreviewBgInput: (value: string) => void;
+};
+
+type PreviewDownloadPanelProps =
+  | IframePreviewDownloadPanelProps
+  | DirectPreviewDownloadPanelProps;
+
+const isDirectPanel = (
+  props: PreviewDownloadPanelProps,
+): props is DirectPreviewDownloadPanelProps => "preview" in props;
+
+export function SharedPreviewDownloadPanel(props: PreviewDownloadPanelProps) {
+  return isDirectPanel(props) ? (
+    <DirectPreviewDownloadPanel {...props} />
+  ) : (
+    <IframePreviewDownloadPanel {...props} />
+  );
+}
+
+export default SharedPreviewDownloadPanel;
+
+function DirectPreviewDownloadPanel({
+  preview,
+  code,
+  downloadName,
+  previewBgMode,
+  previewBgInput,
+  onPreviewBgMode,
+  onPreviewBgInput,
+}: DirectPreviewDownloadPanelProps) {
+  const [viewMode, setViewMode] = useState<"preview" | "code">("preview");
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [fileName, setFileName] = useState(downloadName);
+
+  useEffect(() => {
+    setFileName(downloadName);
+  }, [downloadName]);
+
+  const handleDownload = () => {
+    const blob = new Blob([code], { type: "text/plain;charset=utf-8" });
+    const href = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = href;
+    anchor.download = `${fileName || "component"}.jsx`;
+    anchor.click();
+    URL.revokeObjectURL(href);
+    setIsDownloading(true);
+    window.setTimeout(() => setIsDownloading(false), 1600);
+  };
+
+  return (
+    <PanelShell
+      viewMode={viewMode}
+      setViewMode={setViewMode}
+      code={code}
+      downloadFormat="react"
+      setDownloadFormat={() => undefined}
+      downloadName={fileName}
+      setDownloadName={setFileName}
+      handleDownload={handleDownload}
+      isDownloading={isDownloading}
+      previewContent={
+        <PreviewPanel
+          bgMode={previewBgMode}
+          setBgMode={onPreviewBgMode}
+          customColor={previewBgInput}
+          setCustomColor={onPreviewBgInput}
+        >
+          <div
+            className="h-full w-full flex items-center justify-center"
+            data-audit="preview-node-container"
+            data-testid="preview-node-container"
+          >
+            {preview}
+          </div>
+        </PreviewPanel>
+      }
+    />
+  );
+}
+
+function IframePreviewDownloadPanel(props: IframePreviewDownloadPanelProps) {
   const {
     mounted,
     iframeSrcDoc,
@@ -57,9 +144,91 @@ export default function PreviewDownloadPanel(props: {
   } = props;
 
   const [viewMode, setViewMode] = useState<"preview" | "code">("preview");
+  const [isDownloading, setIsDownloading] = useState(false);
 
-  // Determine language for highlighting based on format
-  const language = "tsx";
+  const handleDownloadWithFeedback = () => {
+    handleDownload();
+    setIsDownloading(true);
+    window.setTimeout(() => setIsDownloading(false), 1600);
+  };
+
+  return (
+    <PanelShell
+      viewMode={viewMode}
+      setViewMode={setViewMode}
+      code={code}
+      downloadFormat={downloadFormat}
+      setDownloadFormat={setDownloadFormat}
+      downloadName={downloadName}
+      setDownloadName={setDownloadName}
+      handleDownload={handleDownloadWithFeedback}
+      isDownloading={isDownloading}
+      previewContent={
+        <PreviewPanel
+          bgMode={previewBgMode}
+          setBgMode={setPreviewBgMode}
+          customColor={previewBgInput}
+          setCustomColor={setPreviewBgInput}
+        >
+          {previewNode ? (
+            <div
+              className="h-full w-full flex items-center justify-center"
+              data-audit="preview-node-container"
+              data-testid="preview-node-container"
+            >
+              {previewNode}
+            </div>
+          ) : mounted && iframeSrcDoc ? (
+            <iframe
+              ref={iframeRef}
+              onLoad={handleIframeLoad}
+              onFocus={() => {
+                iframeRef.current?.contentWindow?.postMessage(
+                  { type: "focus-button" },
+                  "*",
+                );
+              }}
+              title="Action Button Preview"
+              sandbox="allow-scripts"
+              srcDoc={iframeSrcDoc}
+              tabIndex={0}
+              className="h-full w-full border-none"
+              data-audit="preview-iframe"
+              data-testid="preview-iframe"
+            />
+          ) : (
+            <div className="h-full w-full" />
+          )}
+        </PreviewPanel>
+      }
+    />
+  );
+}
+
+function PanelShell(props: {
+  viewMode: "preview" | "code";
+  setViewMode: (value: "preview" | "code") => void;
+  code?: string;
+  downloadFormat: DownloadFormat;
+  setDownloadFormat: (value: DownloadFormat) => void;
+  downloadName: string;
+  setDownloadName: (value: string) => void;
+  handleDownload: () => void;
+  isDownloading: boolean;
+  previewContent: React.ReactNode;
+}) {
+  const {
+    viewMode,
+    setViewMode,
+    code,
+    downloadFormat,
+    setDownloadFormat,
+    downloadName,
+    setDownloadName,
+    handleDownload,
+    isDownloading,
+    previewContent,
+  } = props;
 
   return (
     <ScrollArea className="lg:pl-2 h-full">
@@ -100,6 +269,7 @@ export default function PreviewDownloadPanel(props: {
               fileName={downloadName}
               setFileName={setDownloadName}
               onDownload={handleDownload}
+              isDownloading={isDownloading}
             />
           </div>
         </div>
@@ -122,42 +292,7 @@ export default function PreviewDownloadPanel(props: {
                   data-audit="preview-stage-preview"
                   data-testid="preview-stage-preview"
                 >
-                  <PreviewPanel
-                    bgMode={previewBgMode}
-                    setBgMode={setPreviewBgMode}
-                    customColor={previewBgInput}
-                    setCustomColor={setPreviewBgInput}
-                  >
-                    {previewNode ? (
-                      <div
-                        className="h-full w-full flex items-center justify-center"
-                        data-audit="preview-node-container"
-                        data-testid="preview-node-container"
-                      >
-                        {previewNode}
-                      </div>
-                    ) : mounted && iframeSrcDoc ? (
-                      <iframe
-                        ref={iframeRef}
-                        onLoad={handleIframeLoad}
-                        onFocus={() => {
-                          iframeRef.current?.contentWindow?.postMessage(
-                            { type: "focus-button" },
-                            "*",
-                          );
-                        }}
-                        title="Action Button Preview"
-                        sandbox="allow-scripts"
-                        srcDoc={iframeSrcDoc}
-                        tabIndex={0}
-                        className="h-full w-full border-none"
-                        data-audit="preview-iframe"
-                        data-testid="preview-iframe"
-                      />
-                    ) : (
-                      <div className="h-full w-full" />
-                    )}
-                  </PreviewPanel>
+                  {previewContent}
                 </motion.div>
               ) : (
                 <motion.div
@@ -172,7 +307,7 @@ export default function PreviewDownloadPanel(props: {
                 >
                   <CodeBlock
                     code={code || ""}
-                    language={language}
+                    language="tsx"
                     className="h-full border-none rounded-none"
                   />
                 </motion.div>

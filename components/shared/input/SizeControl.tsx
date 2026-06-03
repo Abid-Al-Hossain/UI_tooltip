@@ -29,11 +29,16 @@ export default function SizeControl(props: {
 
   // Sync state if prop changes externally
   useEffect(() => {
-    setText((current) => {
-      const parsed = parseFloat(current);
-      return !Number.isNaN(parsed) && parsed === value ? current : String(value);
-    });
+    // Avoid overwriting if usage is parsing same number
+    if (parseFloat(text) === value) return;
+    setText(String(value));
   }, [value]);
+
+  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVal = parseFloat(e.target.value);
+    setText(String(newVal));
+    onChange(newVal);
+  };
 
   const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setText(e.target.value);

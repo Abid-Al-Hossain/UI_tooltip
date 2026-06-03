@@ -12,9 +12,11 @@ export interface SectionSelectorProps<T extends string = string> {
   /** Array of section definitions */
   sections: Section<T>[];
   /** Currently active section ID */
-  activeSection: T;
+  activeSection?: T;
+  active?: T;
   /** Callback when section changes */
-  onSectionChange: (id: T) => void;
+  onSectionChange?: (id: T) => void;
+  onChange?: (id: T) => void;
   /** Number of columns in grid (default: adapts to screen size) */
   columns?: 2 | 3 | 4 | 5;
   /** Title above sections (default: "Sections") */
@@ -28,10 +30,14 @@ export interface SectionSelectorProps<T extends string = string> {
 export default function SectionSelector<T extends string = string>({
   sections,
   activeSection,
+  active,
   onSectionChange,
+  onChange,
   columns,
   title = "Sections",
 }: SectionSelectorProps<T>) {
+  const selectedSection = activeSection ?? active ?? sections[0]?.id;
+  const handleSectionChange = onSectionChange ?? onChange;
   // Build grid classes based on columns prop
   const getGridClasses = () => {
     if (columns) {
@@ -68,13 +74,13 @@ export default function SectionSelector<T extends string = string>({
           <button
             key={section.id}
             type="button"
-            onClick={() => onSectionChange(section.id)}
+            onClick={() => handleSectionChange?.(section.id)}
             className="min-h-[52px] w-full rounded-xl border px-4 py-3 text-sm font-semibold leading-snug text-center whitespace-normal break-words transition-all uf-clickable"
             style={{
               borderColor: "var(--border)",
               background:
-                activeSection === section.id ? "var(--primary)" : "transparent",
-              color: activeSection === section.id ? "white" : "var(--text)",
+                selectedSection === section.id ? "var(--primary)" : "transparent",
+              color: selectedSection === section.id ? "white" : "var(--text)",
             }}
           >
             {section.icon && (

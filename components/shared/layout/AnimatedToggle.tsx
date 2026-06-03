@@ -28,8 +28,10 @@ export function AnimatedToggle({
     >
       {options.map((option) => (
         <button
+          type="button"
           key={option.value}
           onClick={() => onChange(option.value)}
+          aria-pressed={value === option.value}
           className={`relative z-10 px-4 py-1.5 text-xs font-semibold transition-colors duration-300 ${
             value === option.value
               ? "text-white"

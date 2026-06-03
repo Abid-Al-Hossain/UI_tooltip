@@ -66,8 +66,10 @@ export default function ExportOptionsControl({
         </div>
 
         <button
+          type="button"
           onClick={onDownload}
           disabled={isDownloading}
+          aria-label={isDownloading ? "Downloaded React component" : "Export React component"}
           className="flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold text-white transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
           style={{
             background: isDownloading
