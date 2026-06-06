@@ -447,8 +447,8 @@ export default function PresetsSection({
                       <PreviewBubble preset={preset} />
 
                       <div className="mt-3 flex flex-wrap gap-2">
-                        {preset.tags.slice(0, 5).map((tag) => (
-                          <Badge key={tag} label={tag} />
+                        {preset.tags.slice(0, 5).map((tag, tagIndex) => (
+                          <Badge key={`${tag}-${tagIndex}`} label={tag} />
                         ))}
                       </div>
                     </motion.div>
