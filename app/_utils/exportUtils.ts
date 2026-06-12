@@ -166,7 +166,7 @@ export default function Tooltip({
             cursor: disabled ? 'not-allowed' : 'pointer',
             opacity: disabled ? 0.55 : 1,
           }}>
-            ${state.triggerText}
+            {${JSON.stringify(state.triggerText || "Hover me")}}
           </button>
         )}
       </div>
@@ -245,34 +245,34 @@ export default function Tooltip({
 
 function getPositionJs(state: TooltipState): string {
   const offset = state.offset;
+  const isStart = state.placement.endsWith("-start");
+  const isEnd = state.placement.endsWith("-end");
 
-  switch (true) {
-    case state.placement.startsWith("top"):
-      return `bottom: 'calc(100% + ${offset}px)', left: '50%', transform: 'translateX(-50%)',`;
-    case state.placement.startsWith("bottom"):
-      return `top: 'calc(100% + ${offset}px)', left: '50%', transform: 'translateX(-50%)',`;
-    case state.placement.startsWith("left"):
-      return `right: 'calc(100% + ${offset}px)', top: '50%', transform: 'translateY(-50%)',`;
-    case state.placement.startsWith("right"):
-      return `left: 'calc(100% + ${offset}px)', top: '50%', transform: 'translateY(-50%)',`;
-    default:
-      return `bottom: 'calc(100% + ${offset}px)', left: '50%', transform: 'translateX(-50%)',`;
-  }
+  const hAlign = isStart ? "left: '0'," : isEnd ? "right: '0'," : "left: '50%', transform: 'translateX(-50%)',";
+  const vAlign = isStart ? "top: '0'," : isEnd ? "bottom: '0'," : "top: '50%', transform: 'translateY(-50%)',";
+
+  if (state.placement.startsWith("top"))
+    return `bottom: 'calc(100% + ${offset}px)', ${hAlign}`;
+  if (state.placement.startsWith("bottom"))
+    return `top: 'calc(100% + ${offset}px)', ${hAlign}`;
+  if (state.placement.startsWith("left"))
+    return `right: 'calc(100% + ${offset}px)', ${vAlign}`;
+  if (state.placement.startsWith("right"))
+    return `left: 'calc(100% + ${offset}px)', ${vAlign}`;
+  return `bottom: 'calc(100% + ${offset}px)', left: '50%', transform: 'translateX(-50%)',`;
 }
 
 function getArrowPositionJs(state: TooltipState): string {
-  switch (true) {
-    case state.placement.startsWith("top"):
-      return `top: '100%', left: '50%', transform: 'translateX(-50%)',`;
-    case state.placement.startsWith("bottom"):
-      return `bottom: '100%', left: '50%', transform: 'translateX(-50%)',`;
-    case state.placement.startsWith("left"):
-      return `left: '100%', top: '50%', transform: 'translateY(-50%)',`;
-    case state.placement.startsWith("right"):
-      return `right: '100%', top: '50%', transform: 'translateY(-50%)',`;
-    default:
-      return "";
-  }
+  const isStart = state.placement.endsWith("-start");
+  const isEnd = state.placement.endsWith("-end");
+  const hArrow = isStart ? "left: '12px'," : isEnd ? "right: '12px'," : "left: '50%', transform: 'translateX(-50%)',";
+  const vArrow = isStart ? "top: '12px'," : isEnd ? "bottom: '12px'," : "top: '50%', transform: 'translateY(-50%)',";
+
+  if (state.placement.startsWith("top")) return `top: '100%', ${hArrow}`;
+  if (state.placement.startsWith("bottom")) return `bottom: '100%', ${hArrow}`;
+  if (state.placement.startsWith("left")) return `left: '100%', ${vArrow}`;
+  if (state.placement.startsWith("right")) return `right: '100%', ${vArrow}`;
+  return "";
 }
 
 function getArrowBorderJs(state: TooltipState, arrowColor: string): string {
