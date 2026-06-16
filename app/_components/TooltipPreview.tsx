@@ -24,6 +24,8 @@ export default function TooltipPreview({ state }: TooltipPreviewProps) {
     state.placement,
   );
   const [portalReady, setPortalReady] = useState(false);
+  const [isTooltipHovered, setIsTooltipHovered] = useState(false);
+  const [isTriggerFocused, setIsTriggerFocused] = useState(false);
 
   const triggerRef = useRef<HTMLButtonElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
@@ -971,6 +973,7 @@ export default function TooltipPreview({ state }: TooltipPreviewProps) {
   };
 
   const handleTriggerFocus = () => {
+    setIsTriggerFocused(true);
     if (state.disabled || state.controlMode !== "uncontrolled") return;
     if (state.triggerEvent.includes("focus")) {
       setIsVisible(true);
@@ -978,6 +981,7 @@ export default function TooltipPreview({ state }: TooltipPreviewProps) {
   };
 
   const handleTriggerBlur = () => {
+    setIsTriggerFocused(false);
     if (state.disabled || state.controlMode !== "uncontrolled") return;
     if (state.triggerEvent.includes("focus")) {
       if (state.interactive) {
@@ -1010,12 +1014,14 @@ export default function TooltipPreview({ state }: TooltipPreviewProps) {
   const handleTooltipEnter = () => {
     if (!state.interactive) return;
     isOverTooltip.current = true;
+    setIsTooltipHovered(true);
     clearHideTimeout();
   };
 
   const handleTooltipLeave = () => {
     if (!state.interactive) return;
     isOverTooltip.current = false;
+    setIsTooltipHovered(false);
     scheduleHide();
   };
 
@@ -1058,15 +1064,15 @@ export default function TooltipPreview({ state }: TooltipPreviewProps) {
           .filter(Boolean)
           .join(" "),
         ...getInteractiveBorderStyles(),
-        background: state.bgColor,
-        color: state.textColor,
+        background: state.interactive && isTooltipHovered ? state.hoverBgColor : state.bgColor,
+        color: state.interactive && isTooltipHovered ? state.hoverTextColor : state.textColor,
         borderRadius: `${state.borderRadius}px`,
         padding: `${state.paddingY}px ${state.paddingX}px`,
         maxWidth: `${state.maxWidth}px`,
         width: "fit-content",
         border:
           state.borderWidth > 0
-            ? `${state.borderWidth}px solid ${state.borderColor}`
+            ? `${state.borderWidth}px ${state.borderStyle} ${state.borderColor}`
             : "none",
         boxShadow: shadowCss,
         backdropFilter:
@@ -1143,10 +1149,16 @@ export default function TooltipPreview({ state }: TooltipPreviewProps) {
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
           disabled={state.disabled}
-          className="px-6 py-3 rounded-xl font-semibold text-white transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-6 py-3 rounded-xl font-semibold text-white transition-all hover:scale-105 focus:outline-none"
           style={{
-            background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
+            background: state.disabled && state.disabledUseCustomColors
+              ? "#64748b"
+              : "linear-gradient(135deg, #6366f1, #8b5cf6)",
             boxShadow: "0 4px 20px rgba(99, 102, 241, 0.3)",
+            opacity: state.disabled ? state.disabledOpacity : 1,
+            cursor: state.disabled ? state.disabledCursor : "pointer",
+            outline: isTriggerFocused && state.focusRingEnabled ? `${state.focusRingWidth}px solid ${state.focusRingColor}` : "none",
+            outlineOffset: isTriggerFocused && state.focusRingEnabled ? state.focusRingOffset : 0,
           }}
         >
           {state.triggerText}

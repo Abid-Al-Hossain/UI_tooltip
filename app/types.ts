@@ -92,6 +92,7 @@ export interface TooltipState {
   paddingY: number;
   maxWidth: number;
   borderWidth: number;
+  borderStyle: "solid" | "dashed" | "dotted";
   borderColor: string;
   shadowEnabled: boolean;
   shadowX: number;
@@ -131,6 +132,19 @@ export interface TooltipState {
   touchHoldDelay: number;
   singleton: boolean;
   disabled: boolean;
+  disabledOpacity: number;
+  disabledCursor: "not-allowed" | "default" | "pointer";
+  disabledUseCustomColors: boolean;
+
+  // === FOCUS RING (trigger) ===
+  focusRingEnabled: boolean;
+  focusRingWidth: number;
+  focusRingOffset: number;
+  focusRingColor: string;
+
+  // === HOVER (interactive re-hover bubble) ===
+  hoverBgColor: string;
+  hoverTextColor: string;
 
   // === CONTENT & DATA ===
   content: string;
@@ -193,6 +207,7 @@ export const DEFAULT_TOOLTIP_STATE: TooltipState = {
   paddingY: 8,
   maxWidth: 300,
   borderWidth: 0,
+  borderStyle: "solid",
   borderColor: "#475569",
   shadowEnabled: true,
   shadowX: 0,
@@ -232,6 +247,17 @@ export const DEFAULT_TOOLTIP_STATE: TooltipState = {
   touchHoldDelay: 300,
   singleton: false,
   disabled: false,
+  disabledOpacity: 0.5,
+  disabledCursor: "not-allowed",
+  disabledUseCustomColors: false,
+
+  focusRingEnabled: true,
+  focusRingWidth: 2,
+  focusRingOffset: 2,
+  focusRingColor: "#6366f1",
+
+  hoverBgColor: "#1e293b",
+  hoverTextColor: "#ffffff",
 
   // Content & Data
   content: "This is a tooltip!",

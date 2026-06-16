@@ -127,11 +127,24 @@ export default function AppearanceSection({
           </LabeledField>
 
           {state.borderWidth > 0 && (
-            <ColorControl
-              label="Border Color"
-              value={state.borderColor}
-              onChange={(v) => update("borderColor", v)}
-            />
+            <>
+              <LabeledField label="Border Style">
+                <SegmentedControl
+                  value={state.borderStyle}
+                  onChange={(v) => update("borderStyle", v as typeof state.borderStyle)}
+                  items={[
+                    { value: "solid", label: "Solid" },
+                    { value: "dashed", label: "Dashed" },
+                    { value: "dotted", label: "Dotted" },
+                  ]}
+                />
+              </LabeledField>
+              <ColorControl
+                label="Border Color"
+                value={state.borderColor}
+                onChange={(v) => update("borderColor", v)}
+              />
+            </>
           )}
         </div>
       </SectionCard>

@@ -56,6 +56,8 @@ export default function Tooltip({
 }: TooltipProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [manualPreviewVisible, setManualPreviewVisible] = useState(false);
+  const [isTooltipHovered, setIsTooltipHovered] = useState(false);
+  const [isTriggerFocused, setIsTriggerFocused] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const controlMode = "${state.controlMode}";
   const triggerEvent = "${state.triggerEvent}";
@@ -146,10 +148,12 @@ export default function Tooltip({
           }
         }}
         onFocus={() => {
+          setIsTriggerFocused(true);
           if (disabled || controlMode !== "uncontrolled") return;
           if (triggerEvent.includes("focus")) setIsVisible(true);
         }}
         onBlur={() => {
+          setIsTriggerFocused(false);
           if (disabled || controlMode !== "uncontrolled") return;
           if (triggerEvent.includes("focus")) setIsVisible(false);
         }}
@@ -158,13 +162,15 @@ export default function Tooltip({
         {children || (
           <button disabled={disabled} style={{
             padding: '12px 24px',
-            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+            background: disabled && ${state.disabledUseCustomColors} ? '#64748b' : 'linear-gradient(135deg, #6366f1, #8b5cf6)',
             color: 'white',
             border: 'none',
             borderRadius: '10px',
             fontWeight: 600,
-            cursor: disabled ? 'not-allowed' : 'pointer',
-            opacity: disabled ? 0.55 : 1,
+            cursor: disabled ? '${state.disabledCursor}' : 'pointer',
+            opacity: disabled ? ${state.disabledOpacity} : 1,
+            outline: isTriggerFocused && ${state.focusRingEnabled} ? '${state.focusRingWidth}px solid ${state.focusRingColor}' : 'none',
+            outlineOffset: isTriggerFocused && ${state.focusRingEnabled} ? ${state.focusRingOffset} : 0,
           }}>
             {${JSON.stringify(state.triggerText || "Hover me")}}
           </button>
@@ -193,15 +199,17 @@ export default function Tooltip({
       <div
         role="${state.role}"
         ${ariaLabelAttr}${ariaDescribedByAttr}
+        onMouseEnter={() => { if (${state.interactive ? "true" : "false"}) setIsTooltipHovered(true); }}
+        onMouseLeave={() => { if (${state.interactive ? "true" : "false"}) setIsTooltipHovered(false); }}
         style={{
           position: 'absolute',
           ${getPositionJs(state)}
-          background: '${state.bgColor}',
-          color: '${state.textColor}',
+          background: ${state.interactive ? `isTooltipHovered ? '${state.hoverBgColor}' : '${state.bgColor}'` : `'${state.bgColor}'`},
+          color: ${state.interactive ? `isTooltipHovered ? '${state.hoverTextColor}' : '${state.textColor}'` : `'${state.textColor}'`},
           padding: '${state.paddingY}px ${state.paddingX}px',
           borderRadius: '${state.borderRadius}px',
           maxWidth: '${state.maxWidth}px',
-          ${state.borderWidth > 0 ? `border: '${state.borderWidth}px solid ${state.borderColor}',` : ""}
+          ${state.borderWidth > 0 ? `border: '${state.borderWidth}px ${state.borderStyle} ${state.borderColor}',` : ""}
           boxShadow: '${shadow}',
           ${state.backdropFilter !== "none" ? `backdropFilter: '${state.backdropFilter}',` : ""}
           opacity: visible ? ${state.opacity / 100} : 0,
