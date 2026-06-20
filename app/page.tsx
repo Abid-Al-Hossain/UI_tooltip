@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useRef, useState } from "react";
+import ContrastGuard from "@/components/shared/color/ContrastGuard";
 import AppShell from "@/components/shared/layout/AppShell";
 import { PlaygroundLayout } from "@/components/shared/layout/PlaygroundLayout";
 import PreviewDownloadPanel from "@/components/shared/layout/SharedPreviewDownloadPanel";
@@ -184,6 +185,7 @@ export default function TooltipPlayground() {
         controls={controlsContent}
         preview={previewContent}
       />
-    </AppShell>
+
+<ContrastGuard /></AppShell>
   );
 }
