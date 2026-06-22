@@ -3,7 +3,7 @@
 import React, { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { SectionCard } from "@/components/shared/layout/SectionCard";
-import { LabeledField, Segmented } from "@/components/shared/layout/ui";
+import { LabeledField, FilterSelect } from "@/components/shared/layout/ui";
 import Select from "@/components/shared/input/Select";
 import type { TooltipPreset } from "../_data/tooltipPresets";
 import type { TooltipState } from "../types";
@@ -214,7 +214,7 @@ export default function PresetsSection({
           </LabeledField>
 
           <LabeledField label="Control Mode">
-            <Segmented
+            <FilterSelect
               value={modeFilter}
               onChange={(value: string) => {
                 setPageDirection(0);
@@ -231,7 +231,7 @@ export default function PresetsSection({
           </LabeledField>
 
           <LabeledField label="Trigger">
-            <Segmented
+            <FilterSelect
               value={triggerFilter}
               onChange={(value: string) => {
                 setPageDirection(0);
