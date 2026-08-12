@@ -113,7 +113,7 @@ export default function AccessibilitySection({
           <LabeledField label="ARIA Label">
             <Input
               value={ariaLabel}
-              onChange={(e) => setAriaLabel(e.target.value)}
+              onChange={setAriaLabel}
               placeholder="Descriptive label for screen readers"
             />
           </LabeledField>
@@ -124,7 +124,7 @@ export default function AccessibilitySection({
           <LabeledField label="ARIA Described By">
             <Input
               value={ariaDescribedBy}
-              onChange={(e) => setAriaDescribedBy(e.target.value)}
+              onChange={setAriaDescribedBy}
               placeholder="ID of describing element"
             />
           </LabeledField>

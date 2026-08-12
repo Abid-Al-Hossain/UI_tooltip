@@ -152,12 +152,9 @@ export function TransitionProvider({
     }
   }, [mode3d, settings3d]);
 
-  const updateSettings3d = useCallback(
-    (k: keyof typeof settings3d, v: number) => {
-      setSettings3d((prev) => ({ ...prev, [k]: v }));
-    },
-    [],
-  );
+  const updateSettings3d = useCallback((k: keyof typeof settings3d, v: number) => {
+    setSettings3d((prev) => ({ ...prev, [k]: v }));
+  }, []);
 
   const value = useMemo(
     () => ({

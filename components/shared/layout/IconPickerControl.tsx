@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import * as LucideIcons from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { icons, type LucideIcon } from "lucide-react";
 import { SegmentedControl } from "../input/SegmentedControl";
 import { LabeledField } from "../layout/LabeledField";
 
@@ -10,9 +9,7 @@ export type IconSource = "library" | "custom";
 export type IconName = string;
 
 // Get all icon names, filtering out non-component exports
-const ICON_NAMES = Object.keys(LucideIcons).filter(
-  (key) => key !== "icons" && key !== "createLucideIcon" && key !== "default",
-);
+const ICON_NAMES = Object.keys(icons);
 
 export default function IconPickerControl(props: {
   label?: string;
@@ -127,8 +124,8 @@ export default function IconPickerControl(props: {
                 );
               }
 
-              const IconComp = LucideIcons[
-                iconKey as keyof typeof LucideIcons
+              const IconComp = icons[
+                iconKey as keyof typeof icons
               ] as LucideIcon | undefined;
               if (!IconComp) return null;
 
